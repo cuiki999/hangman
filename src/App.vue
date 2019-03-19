@@ -21,6 +21,7 @@
         <span class="setting" v-bind:class="{ selected: startingLettersOn }" @click="startingLettersOn = true; reset('Resetting...')">yes</span> / 
         <span class="setting" v-bind:class="{ selected: !startingLettersOn }" @click="startingLettersOn = false; reset('Resetting...')">no</span>
       </p>
+      <p>Streak: {{ streak }}</p>
     </div>
   </div>
 </template>
@@ -42,7 +43,8 @@ export default {
       compLetters: [],
       allLeters: [],
       difficult: false,
-      startingLettersOn: false
+      startingLettersOn: false,
+      streak: 0
     }
   },
   components: {
@@ -89,6 +91,7 @@ export default {
         } else {
           this.imgNumber = 11;
           this.reset('You lose');
+          this.streak = 0;
         }
       }
     },
@@ -103,7 +106,8 @@ export default {
     },
     checkIfVictory() {
       if (this.compLetters.indexOf('&nbsp;') === -1) {
-        this.reset('You won!');          
+        this.reset('You won!');
+        this.streak++;          
       }
     },
     reset(message) {
