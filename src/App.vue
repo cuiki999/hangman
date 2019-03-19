@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Hangman</h1>
+    <h1>Hangman - test branch</h1>
     <div id="hangman-pics">
       <!-- :src is short for v-bind:src -->
       <img :src="require(`./assets/img/${imgNumber}.png`)" />
