@@ -28,7 +28,7 @@
       <div class="user-letters" v-for="userLetter in userLetters.slice(17,26)" @click="userLetter.hex === 1 ? guessLetter(userLetter.letter) : ''">
         <span>{{ userLetter.letter }}</span>
         <img class="hexagon" :src="require(`./assets/img/hex${userLetter.hex}.png`)" />
-      </div>
+      </div> 
     </div>
 
 
