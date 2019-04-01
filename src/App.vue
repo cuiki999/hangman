@@ -1,17 +1,33 @@
 <template>
   <div id="app">
-    <h1>Hangman</h1>
-    <div id="hangman-pics">
-      <!-- :src is short for v-bind:src -->
-      <img :src="require(`./assets/img/${imgNumber}.png`)" />
-    </div>
-    <div v-for="compLetter in compLetters" class="comp-letters">
-      <span v-html="compLetter"></span>
+    <h1>HANGMAN</h1>
+    <div id="paper">
+      <img class="paper" src="./assets/img/big-paper.png" />
+      <div id="hangman-pics">
+        <!-- :src is short for v-bind:src -->
+        <img :src="require(`./assets/img/${imgNumber}.png`)" />
+      </div>
+      <div v-for="compLetter in compLetters" class="comp-letters">
+        <span v-html="compLetter"></span>
+      </div>
     </div>
     <br><br>
-    <div class="user-letters" v-for="userLetter in userLetters" @click="!userLetter.grey ? guessLetter(userLetter.letter) : ''; userLetter.grey = true">
-      <span v-bind:class="{ inactive: userLetter.grey }">{{ userLetter.letter }}</span>
+
+    <div id="user-console">
+      <div class="user-letters" v-for="userLetter in userLetters.slice(0,9)" @click="!userLetter.grey ? guessLetter(userLetter.letter) : ''; userLetter.grey = true">
+        <span v-bind:class="{ inactive: userLetter.grey }">{{ userLetter.letter }}</span>
+        <div class="hexagon"></div>
+      </div>
+      <br>
+      <div class="user-letters" v-for="userLetter in userLetters.slice(9,17)" @click="!userLetter.grey ? guessLetter(userLetter.letter) : ''; userLetter.grey = true">
+        <span v-bind:class="{ inactive: userLetter.grey }">{{ userLetter.letter }}</span>
+      </div>
+      <br>
+      <div class="user-letters" v-for="userLetter in userLetters.slice(17,26)" @click="!userLetter.grey ? guessLetter(userLetter.letter) : ''; userLetter.grey = true">
+        <span v-bind:class="{ inactive: userLetter.grey }">{{ userLetter.letter }}</span>
+      </div>
     </div>
+
     <div>
       <p>Number of failed attempts: 
         <span class="setting" v-bind:class="{ selected: !difficult }" @click="difficult = false; reset('Resetting...')">10</span> / 
@@ -27,7 +43,6 @@
 
 <script>
 import Wordlist from './static/wordlist.json';
-
 
 export default {
   name: 'app',
@@ -52,18 +67,23 @@ export default {
     comeUpWithWord() {
       let random = Math.floor(Math.random() * Wordlist.nouns.length);
       this.word = Wordlist.nouns[random];
-      for (let i = 0; i < this.word.length; i++) {
-        this.compLetters.push("&nbsp;");        
-        if (!/[a-zA-Z]/.test(this.word[i])) {
-          this.compLetters[i] = this.word[i];
+      if (this.word.length < 13) {
+        for (let i = 0; i < this.word.length; i++) {
+          this.compLetters.push("&nbsp;");        
+          if (!/[a-zA-Z]/.test(this.word[i])) {
+            this.compLetters[i] = this.word[i];
+          }
         }
+        if (this.startingLettersOn) {
+          let randomLetter = Math.floor(Math.random() * this.word.length);
+          let letter = this.word.charAt(randomLetter).toUpperCase();
+          this.guessLetter(letter);
+          this.userLetters[this.allLeters.indexOf(letter)].grey = true;
+        }
+      } else {
+        this.comeUpWithWord();
       }
-      if (this.startingLettersOn) {
-        let randomLetter = Math.floor(Math.random() * this.word.length);
-        let letter = this.word.charAt(randomLetter).toUpperCase();
-        this.guessLetter(letter);
-        this.userLetters[this.allLeters.indexOf(letter)].grey = true;
-      }
+      
     },
     guessLetter(letter) {
       if (this.word.toUpperCase().indexOf(letter) !== -1) {
@@ -129,35 +149,73 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
+
+#app {
+  background-color: #CDDEEB;
+  width: 1000px;
+  height: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-family: 'Crimson Text', serif;
+  text-align: center;
+  font-size: 50px;
+}
+
+#paper {
+  text-align: center;
+  margin-top: -20px;
+  //border: 1px solid red;
+  margin-bottom: -200px;
+
+  .paper {
+    width: 60%;
+  }
+}
+
 #hangman-pics img {
-  width: 100px;
+  width: 120px;
+  position: relative;
+  top: -260px;
+}
+
+.comp-letters {
+  font-family: 'Neucha', cursive;
+  // font-weight: 700;
+  position: relative;
+  top: -220px;
+  font-size: 1.5rem;
+  border-bottom: 2px solid black;
+  margin-right: 0.3rem;
+  margin-left: 0.3rem;
+  min-width: 1.3rem;
+  min-height: 1rem;
+  padding: 0 0.3rem;
+  display: inline-block;
+  text-align: center;
+}
+
+#user-console {
+  display: block;
+  text-align: center;
+  margin-top: 30px;
 }
 
 .user-letters {
+  font-family: 'Crimson Text', serif;
   font-size: 2rem;
-  padding: 1rem;
+  min-width: 3rem;
   cursor: pointer;
   font-weight: bold;
   display: inline-block;
   margin-right: 1rem;
+  margin-bottom: 1rem;
 }
 
 .inactive {
   color: grey;
-}
-
-.comp-letters {
-  font-size: 2rem;
-  border-bottom: 3px solid black;
-  margin-right: 1rem;
-  margin-left: 1rem;
-  min-width: 2rem;
-  min-height: 2rem;
-  background-color: orange;
-  padding: 0 0.7rem;
-  display: inline-block;
-  text-align: center;
 }
 
 .setting {
@@ -168,4 +226,42 @@ export default {
   font-weight: bold;
   color: orange;
 }
+
+.hexagon {
+  position: relative;
+  width: 40px; 
+  height: 23.09px;
+  background-color: #7eaacb;
+  margin: 11.55px 0;
+  border-left: 4px solid #ffffff;
+  border-right: 4px solid #ffffff;
+}
+
+.hexagon:before,
+.hexagon:after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: 28.28px;
+  height: 28.28px;
+  -webkit-transform: scaleY(0.5774) rotate(-45deg);
+  -ms-transform: scaleY(0.5774) rotate(-45deg);
+  transform: scaleY(0.5774) rotate(-45deg);
+  background-color: inherit;
+  left: 2.8579px;
+}
+
+.hexagon:before {
+  top: -14.1421px;
+  border-top: 4px solid #ffffff;
+  border-right: 4px solid #ffffff;
+}
+
+.hexagon:after {
+  bottom: -14.1421px;
+  border-bottom: 4px solid #ffffff;
+  border-left: 4px solid #ffffff;
+}
+
+
 </style>
